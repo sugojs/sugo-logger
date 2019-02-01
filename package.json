@@ -1,0 +1,30 @@
+{
+  "name": "@sugo/logger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": {
+    "name": "Francisco Javier Sucre Gonzalez",
+    "email": "franciscojsucreg@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https@git@github.com:franciscosucre/sugo-logger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/franciscosucre/sugo-logger"
+  },
+  "homepage": "https://github.com/franciscosucre/sugo-logger#readme",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "set NODE_ENV=test&& mocha"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
+    "mocha": "^5.2.0"
+  }
+}
