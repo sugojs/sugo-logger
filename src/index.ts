@@ -1,22 +1,31 @@
-class Logger {
-  constructor(options = {}) {
-    this.plugins = Array.isArray(options.plugins) ? [].concat(options.plugins) : [];
-  }
+export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
 
-  addPlugin(plugin) {
+export interface ILoggerPlugin {
+  log(message: string, date: Date): void;
+  info(message: string, date: Date): void;
+  debug(message: string, date: Date): void;
+  warn(message: string, date: Date): void;
+  error(message: string, date: Date): void;
+  handleError(error: Error): void;
+}
+
+export class Logger {
+  public plugins: ILoggerPlugin[] = [];
+
+  public addPlugin(plugin: ILoggerPlugin) {
     this.plugins.push(plugin);
     return this;
   }
 
-  getTimestamp() {
+  public getTimestamp() {
     return new Date();
   }
 
-  getMessage(...args) {
-    return args.join(" ");
+  public getMessage(...args: string[]) {
+    return args.join(' ');
   }
 
-  log(...args) {
+  public log(...args: string[]) {
     const date = this.getTimestamp();
     const message = this.getMessage(...args);
     for (const plugin of this.plugins) {
@@ -24,7 +33,7 @@ class Logger {
     }
   }
 
-  info(...args) {
+  public info(...args: string[]) {
     const date = this.getTimestamp();
     const message = this.getMessage(...args);
     for (const plugin of this.plugins) {
@@ -32,7 +41,7 @@ class Logger {
     }
   }
 
-  debug(...args) {
+  public debug(...args: string[]) {
     const date = this.getTimestamp();
     const message = this.getMessage(...args);
     for (const plugin of this.plugins) {
@@ -40,7 +49,7 @@ class Logger {
     }
   }
 
-  warn(...args) {
+  public warn(...args: string[]) {
     const date = this.getTimestamp();
     const message = this.getMessage(...args);
     for (const plugin of this.plugins) {
@@ -48,7 +57,7 @@ class Logger {
     }
   }
 
-  error(...args) {
+  public error(...args: string[]) {
     const date = this.getTimestamp();
     const message = this.getMessage(...args);
     for (const plugin of this.plugins) {
@@ -56,7 +65,3 @@ class Logger {
     }
   }
 }
-
-module.exports = {
-  Logger
-};
