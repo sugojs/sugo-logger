@@ -1,5 +1,7 @@
 export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
-
+export * from './plugins/console';
+export * from './plugins/elasticSearchRest';
+export * from './plugins/file';
 export interface ILoggerPlugin {
   log(message: string, date: Date): void;
   info(message: string, date: Date): void;
