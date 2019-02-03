@@ -2,7 +2,11 @@
   "name": "@sugo/logger",
   "version": "1.2.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "author": {
     "name": "Francisco Javier Sucre Gonzalez",
     "email": "franciscojsucreg@gmail.com"
