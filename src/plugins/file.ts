@@ -8,7 +8,7 @@ export interface IFileLoggerPlugInOptions {
   daily?: boolean;
 }
 
-export default class FileLoggerPlugIn {
+export class FileLoggerPlugIn {
   public path: string;
   public filename: string;
   public daily: boolean;

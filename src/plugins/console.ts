@@ -36,7 +36,7 @@ export interface IConsoleLoggerPlugInOptions {
   errorColor?: string;
 }
 
-export default class ConsoleLoggerPlugIn {
+export class ConsoleLoggerPlugIn {
   public resetColor: string;
   public logColor: string;
   public infoColor: string;

@@ -9,7 +9,7 @@ export interface IElasticSearchRestLoggerPlugInOptions {
   type?: string;
 }
 
-export default class ElasticSearchRestLoggerPlugIn {
+export class ElasticSearchRestLoggerPlugIn {
   public index: string;
   public host?: string;
   public port?: number;
