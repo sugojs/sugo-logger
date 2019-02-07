@@ -1,3 +1,5 @@
+import { ILoggerPlugin } from '.';
+
 const colors = {
   /* Special */
   Bright: '\x1b[1m',
@@ -36,7 +38,7 @@ export interface IConsoleLoggerPlugInOptions {
   errorColor?: string;
 }
 
-export class ConsoleLoggerPlugIn {
+export class ConsoleLoggerPlugIn implements ILoggerPlugin {
   public resetColor: string;
   public logColor: string;
   public infoColor: string;

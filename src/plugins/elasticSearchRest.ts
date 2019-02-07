@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import * as http from 'http';
+import { ILoggerPlugin } from '.';
 import { LoggerLevel } from '..';
 
 export interface IElasticSearchRestLoggerPlugInOptions {
@@ -9,7 +10,7 @@ export interface IElasticSearchRestLoggerPlugInOptions {
   type?: string;
 }
 
-export class ElasticSearchRestLoggerPlugIn {
+export class ElasticSearchRestLoggerPlugIn implements ILoggerPlugin {
   public index: string;
   public host?: string;
   public port?: number;

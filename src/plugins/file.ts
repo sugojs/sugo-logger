@@ -1,22 +1,29 @@
 import * as fs from 'fs';
 import * as os from 'os';
-import { LoggerLevel } from '..';
+import { normalize, sep } from 'path';
+import { ILoggerPlugin } from '.';
 
+export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
 export interface IFileLoggerPlugInOptions {
   path?: string;
   filename?: string;
   daily?: boolean;
 }
 
-export class FileLoggerPlugIn {
+export class FileLoggerPlugIn implements ILoggerPlugin {
   public path: string;
   public filename: string;
   public daily: boolean;
 
   constructor(options: IFileLoggerPlugInOptions = {}) {
     this.path = options.path || './logs/';
+    this.path = normalize(this.path);
+    this.path += this.path.endsWith('/') ? '' : sep;
     this.filename = options.filename || 'log.txt';
     this.daily = options.daily || false;
+    if (!fs.existsSync(this.path)) {
+      fs.mkdirSync(this.path);
+    }
   }
 
   public getDate() {
@@ -32,59 +39,52 @@ export class FileLoggerPlugIn {
     return [this.path, this.filename, this.daily ? '_' + this.getDate() : '', '.txt'].join('');
   }
 
-  public writeToFile(level: LoggerLevel, message: string, date: Date) {
-    const self = this;
-    fs.mkdir(this.path, null, (err: any) => {
-      if (err && err.code !== 'EEXIST') {
-        return self.handleError(err);
-      }
-      const log = `${date.toISOString()} ${level}: ${message}${os.EOL}`;
-      fs.appendFile(this.getFilepath(), log, {}, (appendError: any) => {
+  public appendToFile(message: string) {
+    return new Promise<any>((resolve, reject) => {
+      fs.appendFile(this.getFilepath(), message, (err?: NodeJS.ErrnoException) => {
         if (err) {
-          return self.handleError(err);
+          reject(err);
         }
+        resolve();
       });
     });
   }
 
-  public log(message: string, date: Date) {
+  public async writeToFile(level: LoggerLevel, message: string, date: Date) {
     try {
-      this.writeToFile('log', message, date);
+      const log = `${date.toISOString()} ${level}: ${message}${os.EOL}`;
+      await this.appendToFile(log);
     } catch (error) {
       this.handleError(error);
     }
+  }
+
+  public async wait(milliseconds: number) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, milliseconds);
+    });
+  }
+
+  public log(message: string, date: Date) {
+    this.writeToFile('log', message, date);
   }
 
   public info(message: string, date: Date) {
-    try {
-      this.writeToFile('info', message, date);
-    } catch (error) {
-      this.handleError(error);
-    }
+    this.writeToFile('info', message, date);
   }
 
   public debug(message: string, date: Date) {
-    try {
-      this.writeToFile('debug', message, date);
-    } catch (error) {
-      this.handleError(error);
-    }
+    this.writeToFile('debug', message, date);
   }
 
   public warn(message: string, date: Date) {
-    try {
-      this.writeToFile('warn', message, date);
-    } catch (error) {
-      this.handleError(error);
-    }
+    this.writeToFile('warn', message, date);
   }
 
   public error(message: string, date: Date) {
-    try {
-      this.writeToFile('error', message, date);
-    } catch (error) {
-      this.handleError(error);
-    }
+    this.writeToFile('error', message, date);
   }
 
   public handleError(error: Error) {
