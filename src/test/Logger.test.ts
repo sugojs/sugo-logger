@@ -1,6 +1,7 @@
 import * as chai from 'chai';
 import * as fs from 'fs';
 import { IncomingMessage } from 'http';
+import * as http from 'http';
 import * as path from 'path';
 import Logger from '../Logger';
 import { ConsoleLoggerPlugIn, ElasticSearchRestLoggerPlugIn, FileLoggerPlugIn } from '../plugins';
@@ -12,7 +13,6 @@ interface IElasticSearchResponse {
 
 const LOGGER_FILE_DIR = './logs/';
 const UGLY_DIR = './/examples//';
-const http = require('http');
 const HOST = 'http://localhost';
 const PORT = 9200;
 const INDEX = 'lme-logger-test';
@@ -22,10 +22,10 @@ const deleteIndex = () =>
   new Promise(resolve => {
     const req = http.request(`${HOST}:${PORT}/${INDEX}`, { method: 'DELETE' }, (res: IncomingMessage) => {
       let rawBody = Buffer.from('');
-      res.on('data', function(chunk: Buffer) {
+      res.on('data', (chunk: Buffer) => {
         rawBody = Buffer.concat([rawBody, chunk]);
       });
-      res.on('end', function() {
+      res.on('end', () => {
         resolve(true);
       });
     });
