@@ -8,6 +8,7 @@ export interface IFileLoggerPlugInOptions {
   path?: string;
   filename?: string;
   daily?: boolean;
+  fileExtension?: string;
 }
 
 export class FileLoggerPlugIn implements ILoggerPlugin {
@@ -18,9 +19,10 @@ export class FileLoggerPlugIn implements ILoggerPlugin {
 
   constructor(options: IFileLoggerPlugInOptions = {}) {
     this.path = options.path ? options.path : this.path;
+    this.path += this.path.endsWith(path.sep) ? '' : path.sep;
     this.path = path.normalize(this.path);
-    this.path += this.path.endsWith('/') ? '' : path.sep;
     this.filename = options.filename ? options.filename : this.filename;
+    this.fileExtension = options.fileExtension ? options.fileExtension : this.fileExtension;
     this.daily = options.daily ? options.daily : this.daily;
     if (!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path);

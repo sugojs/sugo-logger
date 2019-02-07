@@ -1,9 +1,9 @@
 import * as chai from 'chai';
 import * as fs from 'fs';
 import { IncomingMessage } from 'http';
+import * as path from 'path';
 import Logger from '../Logger';
 import { ConsoleLoggerPlugIn, ElasticSearchRestLoggerPlugIn, FileLoggerPlugIn } from '../plugins';
-
 interface IElasticSearchResponse {
   hits: {
     hits: any[];
@@ -11,6 +11,7 @@ interface IElasticSearchResponse {
 }
 
 const LOGGER_FILE_DIR = './logs/';
+const UGLY_DIR = './/examples//';
 const http = require('http');
 const HOST = 'http://localhost';
 const PORT = 9200;
@@ -94,23 +95,51 @@ describe('Simple NodeJS Router', () => {
   });
   describe(`FileLoggerPlugIn`, () => {
     before(() => {
-      if (fs.existsSync(LOGGER_FILE_DIR)) {
-        const files = fs.readdirSync(LOGGER_FILE_DIR);
+      const normalizedPath = path.normalize(LOGGER_FILE_DIR);
+      if (fs.existsSync(normalizedPath)) {
+        const files = fs.readdirSync(normalizedPath);
         for (const file of files) {
-          fs.unlinkSync(LOGGER_FILE_DIR + file);
+          fs.unlinkSync(normalizedPath + file);
         }
-        fs.rmdirSync(LOGGER_FILE_DIR);
+        fs.rmdirSync(normalizedPath);
+      }
+      const normalizedUglyPath = path.normalize(UGLY_DIR);
+      if (fs.existsSync(normalizedUglyPath)) {
+        const files = fs.readdirSync(normalizedUglyPath);
+        for (const file of files) {
+          fs.unlinkSync(normalizedUglyPath + file);
+        }
+        fs.rmdirSync(normalizedUglyPath);
       }
     });
 
     after(() => {
-      if (fs.existsSync(LOGGER_FILE_DIR)) {
-        const files = fs.readdirSync(LOGGER_FILE_DIR);
+      const normalizedPath = path.normalize(LOGGER_FILE_DIR);
+      if (fs.existsSync(normalizedPath)) {
+        const files = fs.readdirSync(normalizedPath);
         for (const file of files) {
-          fs.unlinkSync(LOGGER_FILE_DIR + file);
+          fs.unlinkSync(normalizedPath + file);
         }
-        fs.rmdirSync(LOGGER_FILE_DIR);
+        fs.rmdirSync(normalizedPath);
       }
+      const normalizedUglyPath = path.normalize(UGLY_DIR);
+      if (fs.existsSync(normalizedUglyPath)) {
+        const files = fs.readdirSync(normalizedUglyPath);
+        for (const file of files) {
+          fs.unlinkSync(normalizedUglyPath + file);
+        }
+        fs.rmdirSync(normalizedUglyPath);
+      }
+    });
+
+    it('it should normalize path', async () => {
+      const filePlugin = new FileLoggerPlugIn({ path: UGLY_DIR, filename: 'test', daily: true });
+      filePlugin.path.should.be.eql(path.normalize(UGLY_DIR));
+    });
+
+    it('it should add a separator at the end if does not have one', async () => {
+      const filePlugin = new FileLoggerPlugIn({ path: './logs', filename: 'test.log', daily: true });
+      filePlugin.path.should.be.eql('logs' + path.sep);
     });
 
     it('It should create a dir, a file and write in that file', async () => {

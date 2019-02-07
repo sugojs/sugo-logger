@@ -33,9 +33,9 @@ A simple logger that logs to the console. Has a default color scheme that can be
 - **errorColor:** Color to be used for the error tag in the error method.
 
 ```javascript
-const { ConsoleLoggerPlugIn, colors } = require("@sugo/logger/plugins/console");
+const { ConsoleLoggerPlugIn, colors } = require('@sugo/logger/plugins/console');
 const consolePlugin = new ConsoleLoggerPlugIn({
-  logColor: colors.FgBlack
+  logColor: colors.FgBlack,
 });
 ```
 
@@ -66,7 +66,9 @@ Logs to a file. Can be set to log to a different file daily.
 
 - **path:** The path where the logs will be created. **Default:** './logs/'.
 
-- **filename:** The name of the file. **Default:** 'log.txt'.
+- **filename:** The name of the file. **Default:** 'log'.
+
+- **filename:** The extension of the file. **Default:** 'txt'.
 
 - **daily:** Boolean that defines if there must be a file for each day. If set to **true** then it will append the date to the filename name. Example 'logs-28-10-1991.txt **Default:** false.
 
@@ -91,34 +93,32 @@ To write a custom plugin, just create an object that implementes the following m
 ## **Complete Application Example**
 
 ```javascript
-const { Logger } = require("@sugo/logger");
-const { ConsoleLoggerPlugIn } = require("@sugo/logger/plugins/console");
-const {
-  ElasticSearchRestLoggerPlugIn
-} = require("@sugo/logger/plugins/elasticSearchRest");
-const { FileLoggerPlugIn } = require("@sugo/logger/plugins/file");
+const { Logger } = require('@sugo/logger');
+const { ConsoleLoggerPlugIn } = require('@sugo/logger/plugins/console');
+const { ElasticSearchRestLoggerPlugIn } = require('@sugo/logger/plugins/elasticSearchRest');
+const { FileLoggerPlugIn } = require('@sugo/logger/plugins/file');
 
 const logger = new Logger();
 const consolePlugin = new ConsoleLoggerPlugIn();
 const elasticPlugin = new ElasticSearchRestLoggerPlugIn({
-  host: "http://localhost",
+  host: 'http://localhost',
   port: 9200,
-  index: "sugo-logger-test",
-  type: "logs"
+  index: 'sugo-logger-test',
+  type: 'logs',
 });
 const filePlugin = new FileLoggerPlugIn({
-  path: "./logs/",
-  filename: "test.log",
-  daily: true
+  path: './logs/',
+  filename: 'test.log',
+  daily: true,
 });
 logger
   .addPlugin(consolePlugin)
   .addPlugin(elasticPlugin)
   .addPlugin(filePlugin);
 
-logger.log("Hello", "World");
-logger.warn("Hello", "World");
-logger.error("Hello", "World");
-logger.debug("Hello", "World");
-logger.info("Hello", "World");
+logger.log('Hello', 'World');
+logger.warn('Hello', 'World');
+logger.error('Hello', 'World');
+logger.debug('Hello', 'World');
+logger.info('Hello', 'World');
 ```
