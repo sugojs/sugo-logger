@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as os from 'os';
-import { normalize, sep } from 'path';
+import * as path from 'path';
 import { ILoggerPlugin } from '.';
 
 export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
@@ -11,16 +11,17 @@ export interface IFileLoggerPlugInOptions {
 }
 
 export class FileLoggerPlugIn implements ILoggerPlugin {
-  public path: string;
-  public filename: string;
-  public daily: boolean;
+  public path: string = './logs';
+  public filename: string = 'log';
+  public daily: boolean = false;
+  public fileExtension: string = 'txt';
 
   constructor(options: IFileLoggerPlugInOptions = {}) {
-    this.path = options.path || './logs/';
-    this.path = normalize(this.path);
-    this.path += this.path.endsWith('/') ? '' : sep;
-    this.filename = options.filename || 'log.txt';
-    this.daily = options.daily || false;
+    this.path = options.path ? options.path : this.path;
+    this.path = path.normalize(this.path);
+    this.path += this.path.endsWith('/') ? '' : path.sep;
+    this.filename = options.filename ? options.filename : this.filename;
+    this.daily = options.daily ? options.daily : this.daily;
     if (!fs.existsSync(this.path)) {
       fs.mkdirSync(this.path);
     }
@@ -36,7 +37,11 @@ export class FileLoggerPlugIn implements ILoggerPlugin {
   }
 
   public getFilepath() {
-    return [this.path, this.filename, this.daily ? '_' + this.getDate() : '', '.txt'].join('');
+    return path.format({
+      dir: this.path,
+      name: this.daily ? this.filename + '_' + this.getDate() : this.filename,
+      ext: this.fileExtension,
+    });
   }
 
   public appendToFile(message: string) {
