@@ -69,7 +69,7 @@ export class ConsoleLoggerPlugIn implements ILoggerPlugin {
         this.resetColor,
         trace.get(message),
       ];
-      console.trace(...log);
+      console.debug(...log);
     } catch (error) {
       this.handleError(error);
     }
