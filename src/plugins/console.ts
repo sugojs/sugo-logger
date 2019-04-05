@@ -1,4 +1,6 @@
 import { ILoggerPlugin } from '.';
+import { levelKeys } from '../Logger';
+import * as trace from '../trace';
 
 const colors = {
   /* Special */
@@ -31,43 +33,43 @@ const colors = {
 
 export interface IConsoleLoggerPlugInOptions {
   resetColor?: string;
-  logColor?: string;
-  infoColor?: string;
+  traceColor?: string;
   debugColor?: string;
+  infoColor?: string;
   warnColor?: string;
   errorColor?: string;
+  fatalColor?: string;
 }
 
 export class ConsoleLoggerPlugIn implements ILoggerPlugin {
   public resetColor: string;
-  public logColor: string;
+  public traceColor: string;
   public infoColor: string;
   public debugColor: string;
   public warnColor: string;
   public errorColor: string;
+  public fatalColor: string;
 
   constructor(options: IConsoleLoggerPlugInOptions = {}) {
     this.resetColor = options.resetColor || colors.Reset;
-    this.logColor = options.logColor || colors.FgMagenta;
-    this.infoColor = options.infoColor || colors.FgGreen;
+    this.traceColor = options.traceColor || colors.FgMagenta;
     this.debugColor = options.debugColor || colors.FgBlue;
+    this.infoColor = options.infoColor || colors.FgGreen;
     this.warnColor = options.warnColor || colors.FgYellow;
     this.errorColor = options.errorColor || colors.FgRed;
+    this.fatalColor = options.errorColor || colors.BgRed;
   }
 
-  public log(message: string, date: Date) {
+  public trace(message: string, date: Date) {
     try {
-      const log = [`${date.toISOString()}`, this.logColor, `log:`, this.resetColor, message];
-      console.log(...log);
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  public info(message: string, date: Date) {
-    try {
-      const log = [`${date.toISOString()}`, this.infoColor, `info:`, this.resetColor, message];
-      console.info(...log);
+      const log = [
+        `${date.toISOString()}`,
+        this.traceColor,
+        `${levelKeys.TRACE}:`,
+        this.resetColor,
+        trace.get(message),
+      ];
+      console.trace(...log);
     } catch (error) {
       this.handleError(error);
     }
@@ -75,8 +77,17 @@ export class ConsoleLoggerPlugIn implements ILoggerPlugin {
 
   public debug(message: string, date: Date) {
     try {
-      const log = [`${date.toISOString()}`, this.debugColor, `debug:`, this.resetColor, message];
+      const log = [`${date.toISOString()}`, this.debugColor, `${levelKeys.DEBUG}:`, this.resetColor, message];
       console.debug(...log);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public info(message: string, date: Date) {
+    try {
+      const log = [`${date.toISOString()}`, this.infoColor, `${levelKeys.INFO}:`, this.resetColor, message];
+      console.info(...log);
     } catch (error) {
       this.handleError(error);
     }
@@ -84,7 +95,7 @@ export class ConsoleLoggerPlugIn implements ILoggerPlugin {
 
   public warn(message: string, date: Date) {
     try {
-      const log = [`${date.toISOString()}`, this.warnColor, `warn:`, this.resetColor, message];
+      const log = [`${date.toISOString()}`, this.warnColor, `${levelKeys.WARN}:`, this.resetColor, message];
       console.warn(...log);
     } catch (error) {
       this.handleError(error);
@@ -93,7 +104,16 @@ export class ConsoleLoggerPlugIn implements ILoggerPlugin {
 
   public error(message: string, date: Date) {
     try {
-      const log = [`${date.toISOString()}`, this.errorColor, `error:`, this.resetColor, message];
+      const log = [`${date.toISOString()}`, this.errorColor, `${levelKeys.ERROR}:`, this.resetColor, message];
+      console.error(...log);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public fatal(message: string, date: Date) {
+    try {
+      const log = [`${date.toISOString()}`, this.fatalColor, `${levelKeys.FATAL}:`, this.resetColor, message];
       console.error(...log);
     } catch (error) {
       this.handleError(error);

@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { ILoggerPlugin } from '.';
+import { levelKeys } from '../Logger';
+import * as trace from '../trace';
+import { ILoggerPlugin } from './LoggerPlugin';
 
-export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
 export interface IFileLoggerPlugInOptions {
   path?: string;
   filename?: string;
@@ -57,7 +58,7 @@ export class FileLoggerPlugIn implements ILoggerPlugin {
     });
   }
 
-  public async writeToFile(level: LoggerLevel, message: string, date: Date) {
+  public async writeToFile(level: string, message: string, date: Date) {
     try {
       const log = `${date.toISOString()} ${level}: ${message}${os.EOL}`;
       await this.appendToFile(log);
@@ -74,24 +75,52 @@ export class FileLoggerPlugIn implements ILoggerPlugin {
     });
   }
 
-  public log(message: string, date: Date) {
-    this.writeToFile('log', message, date);
-  }
-
-  public info(message: string, date: Date) {
-    this.writeToFile('info', message, date);
+  public trace(message: string, date: Date) {
+    try {
+      this.writeToFile(levelKeys.TRACE, trace.get(message), date);
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   public debug(message: string, date: Date) {
-    this.writeToFile('debug', message, date);
+    try {
+      this.writeToFile(levelKeys.DEBUG, message, date);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public info(message: string, date: Date) {
+    try {
+      this.writeToFile(levelKeys.INFO, message, date);
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   public warn(message: string, date: Date) {
-    this.writeToFile('warn', message, date);
+    try {
+      this.writeToFile(levelKeys.WARN, message, date);
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   public error(message: string, date: Date) {
-    this.writeToFile('error', message, date);
+    try {
+      this.writeToFile(levelKeys.ERROR, message, date);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public fatal(message: string, date: Date) {
+    try {
+      this.writeToFile(levelKeys.FATAL, message, date);
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   public handleError(error: Error) {

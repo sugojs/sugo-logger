@@ -12,34 +12,75 @@ node version >= 9.11.2
 npm install --save @sugo/logger
 ```
 
-## **Available Plugins**
+## **Logger**
 
-There are several plugins already developed for this logger.
+---
+
+Base object to which the plugins will be attached.
+
+### **options**
+
+- **level:** Log level to which to write logs. It follows the [Log4J](https://logging.apache.org/log4j/2.x/) rules for levels. All levels have a numeric value associated to them, if the logger level is higher than a requested level, it will not be logged. This module contains a levels object to help readability when assigning levels.
+
+```json
+{
+  "ALL": 0,
+  "TRACE": 1,
+  "DEBUG": 2,
+  "INFO": 3,
+  "WARN": 4,
+  "ERROR": 5,
+  "FATAL": 6,
+  "OFF": 7
+}
+```
+
+```typescript
+import { Logger } from '@sugo/logger';
+import { ConsoleLoggerPlugIn } from '@sugo/logger/plugins/console';
+import { ElasticSearchRestLoggerPlugIn } from '@sugo/logger/plugins/elasticSearchRest';
+import { FileLoggerPlugIn } from '@sugo/logger/plugins/file';
+
+import { Logger, levels } from '../logger';
+import { ConsoleLoggerPlugIn } from '../plugins';
+// It will only print FATAL logs
+const logger = new Logger({ level: levels.FATAL, plugins: [new ConsoleLoggerPlugIn()] });
+```
+
+- **transports:** Color to be used for the log tag in the trace method.
 
 ## **ConsoleLoggerPlugIn**
 
+---
+
 A simple logger that logs to the console. Has a default color scheme that can be customtized. The exportd colors object contains the different colors that can be assigned.
 
-## **options**
+### **options**
 
 - **resetColor:** Default text color.
 
-- **logColor:** Color to be used for the log tag in the log method.
+- **traceColor:** Color to be used for the log tag in the trace method.
 
 - **debugColor:** Color to be used for the debug tag in the debug method.
+
+- **infoColor:** Color to be used for the debug tag in the info method.
 
 - **warnColor:** Color to be used for the warn tag in the warn method.
 
 - **errorColor:** Color to be used for the error tag in the error method.
 
-```javascript
+- **fatalColor:** Color to be used for the error tag in the fatal method.
+
+```typescript
 const { ConsoleLoggerPlugIn, colors } = require('@sugo/logger/plugins/console');
 const consolePlugin = new ConsoleLoggerPlugIn({
-  logColor: colors.FgBlack,
+  infoColor: colors.FgBlack,
 });
 ```
 
 ## **ElasticSearchRestLoggerPlugIn**
+
+---
 
 Logs to an elastic search index.
 
@@ -48,7 +89,7 @@ this.port = options.port || 9200;
 this.index = options.index;
 this.type = options.type || "logs";
 
-## **options**
+### **options**
 
 - **host:** Elastic search server host url. **Default:** http://localhost.
 
@@ -60,31 +101,35 @@ this.type = options.type || "logs";
 
 ## **FileLoggerPlugIn**
 
+---
+
 Logs to a file. Can be set to log to a different file daily.
 
-## **options**
+### **options**
 
 - **path:** The path where the logs will be created. **Default:** './logs/'.
 
-- **filename:** The name of the file. **Default:** 'log'.
-
-- **filename:** The extension of the file. **Default:** 'txt'.
+- **filename:** The name of the file. **Default:** 'log.txt'.
 
 - **daily:** Boolean that defines if there must be a file for each day. If set to **true** then it will append the date to the filename name. Example 'logs-28-10-1991.txt **Default:** false.
 
-## **Custom Plugin**
+## **Writing a Custom Plugin**
+
+---
 
 To write a custom plugin, just create an object that implementes the following methods:
 
-- **log(message, date)**
+- **trace(message, date)**
+
+- **debug(message, date)**
+
+- **info(message, date)**
 
 - **warn(message, date)**
 
 - **error(message, date)**
 
-- **debug(message, date)**
-
-- **info(message, date)**
+- **fatal(message, date)**
 
 **NOTE 1:** The message and date will be passed down from the Logger object.
 
@@ -92,11 +137,13 @@ To write a custom plugin, just create an object that implementes the following m
 
 ## **Complete Application Example**
 
-```javascript
-const { Logger } = require('@sugo/logger');
-const { ConsoleLoggerPlugIn } = require('@sugo/logger/plugins/console');
-const { ElasticSearchRestLoggerPlugIn } = require('@sugo/logger/plugins/elasticSearchRest');
-const { FileLoggerPlugIn } = require('@sugo/logger/plugins/file');
+---
+
+```typescript
+import { Logger } from '@sugo/logger';
+import { ConsoleLoggerPlugIn } from '@sugo/logger/plugins/console';
+import { ElasticSearchRestLoggerPlugIn } from '@sugo/logger/plugins/elasticSearchRest';
+import { FileLoggerPlugIn } from '@sugo/logger/plugins/file';
 
 const logger = new Logger();
 const consolePlugin = new ConsoleLoggerPlugIn();
@@ -116,9 +163,10 @@ logger
   .addPlugin(elasticPlugin)
   .addPlugin(filePlugin);
 
-logger.log('Hello', 'World');
-logger.warn('Hello', 'World');
-logger.error('Hello', 'World');
+logger.trace('Hello', 'World');
 logger.debug('Hello', 'World');
 logger.info('Hello', 'World');
+logger.warn('Hello', 'World');
+logger.error('Hello', 'World');
+logger.fatal('Hello', 'World');
 ```

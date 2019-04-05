@@ -1,7 +1,8 @@
 import * as assert from 'assert';
 import * as http from 'http';
 import { ILoggerPlugin } from '.';
-import { LoggerLevel } from '..';
+import { levelKeys } from '../Logger';
+import * as trace from '../trace';
 
 export interface IElasticSearchRestLoggerPlugInOptions {
   index: string;
@@ -28,7 +29,7 @@ export class ElasticSearchRestLoggerPlugIn implements ILoggerPlugin {
     this.type = options.type || 'logs';
   }
 
-  public postToElasticSearch(level: LoggerLevel, message: string, timestamp: Date) {
+  public postToElasticSearch(level: string, message: string, timestamp: Date) {
     const self = this;
     const { host, index, port, type } = self;
     const data = {
@@ -65,17 +66,9 @@ export class ElasticSearchRestLoggerPlugIn implements ILoggerPlugin {
     req.end();
   }
 
-  public log(message: string, date: Date) {
+  public trace(message: string, date: Date) {
     try {
-      this.postToElasticSearch('log', message, date);
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  public info(message: string, date: Date) {
-    try {
-      this.postToElasticSearch('info', message, date);
+      this.postToElasticSearch(levelKeys.TRACE, trace.get(message), date);
     } catch (error) {
       this.handleError(error);
     }
@@ -83,7 +76,15 @@ export class ElasticSearchRestLoggerPlugIn implements ILoggerPlugin {
 
   public debug(message: string, date: Date) {
     try {
-      this.postToElasticSearch('debug', message, date);
+      this.postToElasticSearch(levelKeys.DEBUG, message, date);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public info(message: string, date: Date) {
+    try {
+      this.postToElasticSearch(levelKeys.INFO, message, date);
     } catch (error) {
       this.handleError(error);
     }
@@ -91,7 +92,7 @@ export class ElasticSearchRestLoggerPlugIn implements ILoggerPlugin {
 
   public warn(message: string, date: Date) {
     try {
-      this.postToElasticSearch('warn', message, date);
+      this.postToElasticSearch(levelKeys.WARN, message, date);
     } catch (error) {
       this.handleError(error);
     }
@@ -99,7 +100,15 @@ export class ElasticSearchRestLoggerPlugIn implements ILoggerPlugin {
 
   public error(message: string, date: Date) {
     try {
-      this.postToElasticSearch('error', message, date);
+      this.postToElasticSearch(levelKeys.ERROR, message, date);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public fatal(message: string, date: Date) {
+    try {
+      this.postToElasticSearch(levelKeys.FATAL, message, date);
     } catch (error) {
       this.handleError(error);
     }
