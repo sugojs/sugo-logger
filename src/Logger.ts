@@ -55,7 +55,7 @@ export class Logger {
     return args.join(' ');
   }
 
-  public trace(...args: string[]) {
+  public async trace(...args: string[]) {
     if (this.level > levels.TRACE) {
       return;
     }
@@ -66,7 +66,7 @@ export class Logger {
     }
   }
 
-  public debug(...args: string[]) {
+  public async debug(...args: string[]) {
     if (this.level > levels.DEBUG) {
       return;
     }
@@ -77,7 +77,7 @@ export class Logger {
     }
   }
 
-  public info(...args: string[]) {
+  public async info(...args: string[]) {
     if (this.level > levels.INFO) {
       return;
     }
@@ -88,7 +88,7 @@ export class Logger {
     }
   }
 
-  public warn(...args: string[]) {
+  public async warn(...args: string[]) {
     if (this.level > levels.WARN) {
       return;
     }
@@ -99,7 +99,7 @@ export class Logger {
     }
   }
 
-  public error(...args: string[]) {
+  public async error(...args: string[]) {
     if (this.level > levels.ERROR) {
       return;
     }
@@ -110,7 +110,7 @@ export class Logger {
     }
   }
 
-  public fatal(...args: string[]) {
+  public async fatal(...args: string[]) {
     if (this.level > levels.FATAL) {
       return;
     }

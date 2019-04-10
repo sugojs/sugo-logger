@@ -1,9 +1,7 @@
-import { AssertionError } from 'assert';
 import * as chai from 'chai';
 import * as fs from 'fs';
 import { IncomingMessage } from 'http';
 import * as http from 'http';
-import * as path from 'path';
 import Logger, { levels } from '../Logger';
 import { ConsoleLoggerPlugIn, ElasticSearchRestLoggerPlugIn, FileLoggerPlugIn } from '../plugins';
 interface IElasticSearchResponse {
@@ -12,8 +10,8 @@ interface IElasticSearchResponse {
   };
 }
 
+const ELASTIC_WAIT = 1200;
 const LOGGER_FILE_DIR = './logs/';
-const UGLY_DIR = './/examples//';
 const HOST = 'http://localhost';
 const PORT = 9200;
 const INDEX = 'lme-logger-test';
@@ -71,14 +69,15 @@ describe('Simple NodeJS Router', () => {
   describe(`ConsoleLoggerPlugIn`, () => {
     const consolePlugin = new ConsoleLoggerPlugIn();
     it('It should not fail', async () => {
-      const logger = new Logger();
-      logger.addPlugin(consolePlugin);
-      logger.trace('Hello', 'World');
-      logger.debug('Hello', 'World');
-      logger.info('Hello', 'World');
-      logger.warn('Hello', 'World');
-      logger.error('Hello', 'World');
-      logger.fatal('Hello', 'World');
+      const logger = new Logger({ plugins: [consolePlugin] });
+      await Promise.all([
+        logger.trace('Hello', 'World'),
+        logger.debug('Hello', 'World'),
+        logger.info('Hello', 'World'),
+        logger.warn('Hello', 'World'),
+        logger.error('Hello', 'World'),
+        logger.fatal('Hello', 'World'),
+      ]);
     });
   });
 
@@ -95,15 +94,16 @@ describe('Simple NodeJS Router', () => {
     });
 
     it('It should entries on the index', async () => {
-      const logger = new Logger();
-      logger.addPlugin(elasticPlugin);
-      await logger.trace('Hello', 'World');
-      await logger.debug('Hello', 'World');
-      await logger.info('Hello', 'World');
-      await logger.warn('Hello', 'World');
-      await logger.error('Hello', 'World');
-      await logger.fatal('Hello', 'World');
-      await waitInterval(1500);
+      const logger = new Logger({ plugins: [elasticPlugin] });
+      await Promise.all([
+        logger.trace('Hello', 'World'),
+        logger.debug('Hello', 'World'),
+        logger.info('Hello', 'World'),
+        logger.warn('Hello', 'World'),
+        logger.error('Hello', 'World'),
+        logger.fatal('Hello', 'World'),
+      ]);
+      await waitInterval(ELASTIC_WAIT);
       const logs = await getLogs();
       logs.hits.hits.length.should.be.eql(6);
     });
@@ -136,14 +136,15 @@ describe('Simple NodeJS Router', () => {
         filename: 'test.log',
         daily: true,
       });
-      const logger = new Logger();
-      logger.addPlugin(filePlugin);
-      await logger.trace('Hello', 'World');
-      await logger.debug('Hello', 'World');
-      await logger.info('Hello', 'World');
-      await logger.warn('Hello', 'World');
-      await logger.error('Hello', 'World');
-      await logger.fatal('Hello', 'World');
+      const logger = new Logger({ plugins: [filePlugin] });
+      await Promise.all([
+        logger.trace('Hello', 'World'),
+        logger.debug('Hello', 'World'),
+        logger.info('Hello', 'World'),
+        logger.warn('Hello', 'World'),
+        logger.error('Hello', 'World'),
+        logger.fatal('Hello', 'World'),
+      ]);
       const dirExists = fs.existsSync(LOGGER_FILE_DIR);
       dirExists.should.be.eql(true);
     });
@@ -162,13 +163,15 @@ describe('Simple NodeJS Router', () => {
         type: TYPE,
       });
       const logger = new Logger({ level: levels.FATAL, plugins: [elasticPlugin] });
-      await logger.trace('Hello', 'World');
-      await logger.debug('Hello', 'World');
-      await logger.info('Hello', 'World');
-      await logger.warn('Hello', 'World');
-      await logger.error('Hello', 'World');
-      await logger.fatal('Hello', 'World');
-      await waitInterval(1500);
+      await Promise.all([
+        logger.trace('Hello', 'World'),
+        logger.debug('Hello', 'World'),
+        logger.info('Hello', 'World'),
+        logger.warn('Hello', 'World'),
+        logger.error('Hello', 'World'),
+        logger.fatal('Hello', 'World'),
+      ]);
+      await waitInterval(ELASTIC_WAIT);
       const logs = await getLogs();
       logs.hits.hits.length.should.be.eql(1);
     });

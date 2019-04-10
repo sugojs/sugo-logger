@@ -49,6 +49,24 @@ const logger = new Logger({ level: levels.FATAL, plugins: [new ConsoleLoggerPlug
 
 - **transports:** Color to be used for the log tag in the trace method.
 
+### Methods:
+
+- **addPlugin(plugin)**
+
+- **trace(message, date)**
+
+- **debug(message, date)**
+
+- **info(message, date)**
+
+- **warn(message, date)**
+
+- **error(message, date)**
+
+- **fatal(message, date)**
+
+**NOTE:** All logging methods are **asynchronous** to reduce the logger performance impact.
+
 ## **ConsoleLoggerPlugIn**
 
 ---
